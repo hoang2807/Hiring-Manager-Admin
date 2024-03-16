@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Row, Space, Table, Tag, Typography } from 'antd'
+import { Button, Card, Divider, Space, Table, Tag, Typography } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import ButtonGroup from 'antd/es/button/button-group'
 import { faker } from '@faker-js/faker'
@@ -44,70 +44,62 @@ const Home = () => {
       </Space>
       <Divider />
 
-      <Row
-        gutter={10}
-        style={{
-          marginTop: 10
-        }}
-      >
-        <Col span={22}>
-          <Table
-            dataSource={data}
-            rowKey='id'
-            columns={[
-              {
-                dataIndex: 'id',
-                title: 'ID'
-                // key: 'id'
-              },
-              {
-                dataIndex: 'name',
-                title: 'Name'
-                // key: 'name'
-              },
-              {
-                dataIndex: 'email',
-                title: 'Email'
-                // key: 'email'
-              },
-              {
-                dataIndex: 'phone_number',
-                title: 'Phone Number'
-                // key: 'phone_number'
-              },
-              {
-                dataIndex: 'gender',
-                title: 'Gender'
-                // key: 'gender'
-              },
-              {
-                dataIndex: 'address',
-                title: 'Address'
-                // key: 'address'
-              },
-              {
-                dataIndex: 'status',
-                title: 'Status',
-                // key: 'status',
-                render: (val) => (val ? <Tag>Active</Tag> : <Tag>Not Active</Tag>)
-              },
-              {
-                dataIndex: 'action',
-                title: 'Action',
-                // key: 'action',
-                render: () => (
-                  <ButtonGroup>
-                    <Button>Edit</Button>
-                    <Button type='primary' danger>
-                      Delete
-                    </Button>
-                  </ButtonGroup>
-                )
-              }
-            ]}
-          />
-        </Col>
-      </Row>
+      <Table
+        dataSource={data}
+        pagination={{ pageSize: 9 }}
+        rowKey='id'
+        columns={[
+          {
+            dataIndex: 'id',
+            title: 'ID'
+            // key: 'id'
+          },
+          {
+            dataIndex: 'name',
+            title: 'Name'
+            // key: 'name'
+          },
+          {
+            dataIndex: 'email',
+            title: 'Email'
+            // key: 'email'
+          },
+          {
+            dataIndex: 'phone_number',
+            title: 'Phone Number'
+            // key: 'phone_number'
+          },
+          {
+            dataIndex: 'gender',
+            title: 'Gender'
+            // key: 'gender'
+          },
+          {
+            dataIndex: 'address',
+            title: 'Address'
+            // key: 'address'
+          },
+          {
+            dataIndex: 'status',
+            title: 'Status',
+            // key: 'status',
+            render: (val) => (val ? <Tag>Active</Tag> : <Tag>Not Active</Tag>)
+          },
+          {
+            dataIndex: 'action',
+            title: 'Action',
+            // key: 'action',
+            render: () => (
+              <ButtonGroup>
+                <Button>Edit</Button>
+                <Button type='primary' danger>
+                  Delete
+                </Button>
+              </ButtonGroup>
+            )
+          }
+        ]}
+      />
     </>
   )
 }

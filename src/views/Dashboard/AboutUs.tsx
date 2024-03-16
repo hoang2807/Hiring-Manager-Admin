@@ -1,21 +1,36 @@
 import { Button, Card, Form, Input } from 'antd'
+import { useState } from 'react'
 
 const AboutUs = () => {
+  const [status, setStatus] = useState<boolean>(false)
+  const onEdit = () => {
+    setStatus(!status)
+  }
+
+  const handleEdit = () => {
+    onEdit()
+  }
+
+  const handleSave = () => {
+    onEdit()
+  }
+
   return (
     <Card>
       <Form layout='vertical'>
         <Form.Item label='Name'>
-          <Input disabled />
+          <Input disabled={status} />
         </Form.Item>
         <Form.Item label='Email'>
-          <Input type='email' disabled />
+          <Input type='email' disabled={status} />
         </Form.Item>
         <Form.Item label='Address'>
-          <Input disabled />
+          <Input disabled={status} />
         </Form.Item>
         <Form.Item label='About me'>
           <Input.TextArea
-            disabled
+            disabled={status}
+            rows={6}
             maxLength={100}
             value='Công ty Cổ phần Smilee Việt Nam được thành lập vào ngày 08/10/2018 mục tiêu trở thành công ty về các nhãn hiệu chăm sóc sức khoẻ số 1 Đông Nam Á.
 
@@ -50,7 +65,7 @@ Luôn so sánh với những cá nhân xuất sắc nhất trong lĩnh vực đa
 '
           />
         </Form.Item>
-        <Button>Edit</Button>
+        {status ? <Button onClick={handleSave}>Save</Button> : <Button onClick={handleEdit}>Edit</Button>}
         <Button type='primary' danger>
           Delete
         </Button>

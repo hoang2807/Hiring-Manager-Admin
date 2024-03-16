@@ -8,11 +8,11 @@ const DashboardLayout = () => {
   false
   return (
     <Layout className='container'>
-      <Header>
-        <h1>Dashboard</h1>
-      </Header>
+      <Sidebar />
       <Layout>
-        <Sidebar />
+        <Header>
+          <h1>Dashboard</h1>
+        </Header>
         <Content className='content'>
           <Outlet />
         </Content>
