@@ -2,6 +2,8 @@ import { Button, Card, Divider, Space, Table, Tag, Typography } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import ButtonGroup from 'antd/es/button/button-group'
 import { faker } from '@faker-js/faker'
+import { userStore } from '@/storage/user'
+import { useEffect } from 'react'
 
 const generateData = () => {
   const data = []
@@ -24,6 +26,13 @@ const generateData = () => {
 const data = generateData()
 
 const Home = () => {
+  useEffect(() => {
+    const id = userStore.userInfo.enterpriseId
+    fetch(`http://localhost:3000/api/job/${id}`)
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error(error))
+  }, [])
   return (
     <>
       <Space direction='horizontal'>

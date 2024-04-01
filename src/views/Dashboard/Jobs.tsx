@@ -9,6 +9,7 @@ const generateData = () => {
 
   for (let i = 0; i < 32; ++i) {
     data.push({
+      key: i,
       name: faker.person.fullName(),
       title: faker.person.jobTitle(),
       position: faker.person.jobArea(),
@@ -55,32 +56,32 @@ const Jobs = () => {
         <Table
           dataSource={data}
           pagination={{ pageSize: 8 }}
-          rowKey='id'
+          rowKey='name'
           columns={[
             {
               dataIndex: 'name',
-              title: 'Name'
-              // key: 'name'
+              title: 'Name',
+              key: 'name'
             },
             {
               dataIndex: 'title',
-              title: 'Title'
-              // key: 'email'
+              title: 'Title',
+              key: 'email'
             },
             {
               dataIndex: 'position',
-              title: 'Position'
-              // key: 'phone_number'
+              title: 'Position',
+              key: 'position'
             },
             {
               dataIndex: 'location',
-              title: 'Location'
-              // key: 'gender'
+              title: 'Location',
+              key: 'location'
             },
             {
               dataIndex: 'action',
               title: 'Action',
-              // key: 'action',
+              key: 'action',
               render: () => (
                 <ButtonGroup>
                   <Button>Edit</Button>
