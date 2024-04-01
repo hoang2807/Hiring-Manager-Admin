@@ -5,7 +5,6 @@ import { Outlet } from 'react-router-dom'
 // import Home from '@/views/Home'
 
 const DashboardLayout = () => {
-  false
   return (
     <Layout className='container'>
       <Sidebar />

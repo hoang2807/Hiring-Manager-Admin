@@ -1,9 +1,8 @@
-import { Button, Card, Divider, Space, Table, Tag, Typography } from 'antd'
-import { UserOutlined } from '@ant-design/icons'
+import { Button, Table, Tag } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { faker } from '@faker-js/faker'
-import { userStore } from '@/storage/user'
 import { useEffect } from 'react'
+import ListCard from '@/components/ListCard'
 
 const generateData = () => {
   const data = []
@@ -27,7 +26,7 @@ const data = generateData()
 
 const Home = () => {
   useEffect(() => {
-    const id = userStore.userInfo.enterpriseId
+    const id = window.sessionStorage.getItem('enterpriseId')
     fetch(`http://localhost:3000/api/job/${id}`)
       .then((res) => res.json())
       .then((data) => console.log(data))
@@ -35,23 +34,7 @@ const Home = () => {
   }, [])
   return (
     <>
-      <Space direction='horizontal'>
-        <Card style={{ padding: '0 3rem' }}>
-          <Space direction='horizontal'>
-            <UserOutlined />
-            <small>Total User</small>
-          </Space>
-          <Typography.Title>1234</Typography.Title>
-        </Card>
-        <Card style={{ padding: '0 3rem' }}>
-          <Space direction='horizontal'>
-            <UserOutlined />
-            <small>Total User</small>
-          </Space>
-          <Typography.Title>1234</Typography.Title>
-        </Card>
-      </Space>
-      <Divider />
+      <ListCard />
 
       <Table
         dataSource={data}

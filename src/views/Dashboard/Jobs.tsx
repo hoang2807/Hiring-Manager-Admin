@@ -1,26 +1,8 @@
-import { Button, Card, DatePicker, Divider, Form, Input, Modal, Select, Slider, Space, Table, Typography } from 'antd'
-import { UserOutlined } from '@ant-design/icons'
+import { Button, DatePicker, Form, Input, Modal, Select, Slider, Space, Table } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
-import { faker } from '@faker-js/faker'
-import { useState } from 'react'
-
-const generateData = () => {
-  const data = []
-
-  for (let i = 0; i < 32; ++i) {
-    data.push({
-      key: i,
-      name: faker.person.fullName(),
-      title: faker.person.jobTitle(),
-      position: faker.person.jobArea(),
-      location: faker.location.city()
-    })
-  }
-
-  return data
-}
-
-const data = generateData()
+import { useEffect, useState } from 'react'
+import Cities from '@/data/cities.json'
+import ListCard from '@/components/ListCard'
 
 const Jobs = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
@@ -30,43 +12,46 @@ const Jobs = () => {
   const handleCancel = () => {
     setIsModalOpen(false)
   }
+
+  const [job, setJob] = useState([])
+
+  useEffect(() => {
+    const id = window.sessionStorage.getItem('enterpriseId') || ''
+    getList(id)
+  }, [])
+
+  const getList = (id: string) => {
+    fetch(`${import.meta.env.VITE_BASE_API_URL}/job/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data)
+        setJob(data.data)
+      })
+      .catch((error) => console.error(error))
+  }
+
   return (
     <>
-      <Space direction='horizontal'>
-        <Card style={{ padding: '0 3rem' }}>
-          <Space direction='horizontal'>
-            <UserOutlined />
-            <small>Total Job</small>
-          </Space>
-          <Typography.Title>1234</Typography.Title>
-        </Card>
-        <Card style={{ padding: '0 3rem' }}>
-          <Space direction='horizontal'>
-            <UserOutlined />
-            <small>Total Job</small>
-          </Space>
-          <Typography.Title>1234</Typography.Title>
-        </Card>
-      </Space>
-      <Divider />
+      <ListCard />
+
       <Space direction='vertical' size={'middle'} style={{ display: 'flex' }}>
         <Button type='primary' onClick={showModal}>
           New job
         </Button>
         <Table
-          dataSource={data}
-          pagination={{ pageSize: 8 }}
-          rowKey='name'
+          dataSource={job}
+          pagination={{ pageSize: 6 }}
+          rowKey='id'
           columns={[
-            {
-              dataIndex: 'name',
-              title: 'Name',
-              key: 'name'
-            },
             {
               dataIndex: 'title',
               title: 'Title',
-              key: 'email'
+              key: 'title'
+            },
+            {
+              dataIndex: 'skills',
+              title: 'Skills',
+              key: 'skills'
             },
             {
               dataIndex: 'position',
@@ -100,25 +85,23 @@ const Jobs = () => {
           <Form.Item label='Title'>
             <Input disabled />
           </Form.Item>
+          <Form.Item label='Location'>
+            <Select style={{ width: 120 }} defaultValue='An Giang'>
+              {Cities?.map((item) => (
+                <Select.Option value={item.name} key={item.code}>
+                  {item.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
           <Form.Item label='Position'>
             <Select
-              defaultValue='lucy'
+              defaultValue='Fulltime'
               style={{ width: 120 }}
               options={[
-                { value: 'jack', label: 'Jack' },
-                { value: 'lucy', label: 'Lucy' },
-                { value: 'Yiminghe', label: 'yiminghe' }
-              ]}
-            />
-          </Form.Item>
-          <Form.Item label='Location'>
-            <Select
-              defaultValue='lucy'
-              style={{ width: 120 }}
-              options={[
-                { value: 'jack', label: 'Jack' },
-                { value: 'lucy', label: 'Lucy' },
-                { value: 'Yiminghe', label: 'yiminghe' }
+                { value: 'Fulltime', label: 'Fulltime' },
+                { value: 'Part time', label: 'Parttime' },
+                { value: 'Freelancer', label: 'Freelancer' }
               ]}
             />
           </Form.Item>

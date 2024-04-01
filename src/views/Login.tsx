@@ -5,7 +5,7 @@ import { Button, Card, Col, Form, type FormProps, Input, Row } from 'antd'
 import { Controller, useForm, SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
-import { userStore } from '@/storage/user'
+// import { userStore } from '@/storage/user'
 
 const Login = observer(() => {
   const navigate = useNavigate()
@@ -28,10 +28,12 @@ const Login = observer(() => {
       })
     ).json()
 
-    userStore.setInfo({
-      id: res.data.result.id,
-      enterpriseId: res.data.result.enterpriseId
-    })
+    // userStore.setInfo({
+    //   id: res.data.result.id,
+    //   enterpriseId: res.data.result.enterpriseId
+    // })
+    window.sessionStorage.setItem('userId', res.data.result.id)
+    window.sessionStorage.setItem('enterpriseId', res.data.result.enterpriseId)
     navigate('/')
   }
 
