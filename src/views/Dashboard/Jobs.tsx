@@ -1,4 +1,4 @@
-import { Button, DatePicker, Form, Input, Modal, Select, Slider, Space, Table } from 'antd'
+import { Button, DatePicker, DatePickerProps, Form, Input, Modal, Select, Slider, Space, Table } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { useEffect, useState } from 'react'
 import Cities from '@/data/cities.json'
@@ -6,11 +6,68 @@ import ListCard from '@/components/ListCard'
 
 const Jobs = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [title, setTitle] = useState('')
+  const [location, setLocation] = useState('')
+  const [position, setPosition] = useState('')
+  const [description, setDescription] = useState('')
+  const [requirements, setRequirements] = useState('')
+  const [time, setTime] = useState('')
+  const [date, setDate] = useState('')
+  const [salary, setSalary] = useState('')
+  const [skills, setSkills] = useState('')
+  const [benefits, setBenefits] = useState('')
+  const [mode, setMode] = useState('add')
+
   const showModal = () => {
     setIsModalOpen(true)
   }
   const handleCancel = () => {
     setIsModalOpen(false)
+  }
+
+  const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
+    setDate(dateString)
+  }
+
+  const handleOk = () => {
+    fetch('http://localhost:3000/api/job', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title,
+        job_description: description,
+        job_requirements: requirements,
+        position,
+        salary,
+        working_time: time,
+        location,
+        deadline_date: date,
+        benefits,
+        skills,
+        enterpriseName: 'Viettel',
+        enterpriseId: parseInt(sessionStorage.getItem('enterpriseId'))
+      })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data)
+        getList(sessionStorage.getItem('enterpriseId'))
+      })
+      .catch((error) => console.log(error))
+    // const data = {
+    //   title,
+    //   location,
+    //   description,
+    //   requirements,
+    //   position,
+    //   time,
+    //   date,
+    //   salary
+    // }
+
+    // console.log(data)
   }
 
   const [job, setJob] = useState([])
@@ -80,13 +137,13 @@ const Jobs = () => {
           ]}
         />
       </Space>
-      <Modal title='New Job' open={isModalOpen} onCancel={handleCancel} width={800}>
+      <Modal title='New Job' open={isModalOpen} onCancel={handleCancel} onOk={handleOk} width={800}>
         <Form labelCol={{ span: 4 }}>
           <Form.Item label='Title'>
-            <Input disabled />
+            <Input onChange={(e) => setTitle(e.target.value)} />
           </Form.Item>
           <Form.Item label='Location'>
-            <Select style={{ width: 120 }} defaultValue='An Giang'>
+            <Select style={{ width: 120 }} defaultValue='An Giang' onChange={(e) => setLocation(e)}>
               {Cities?.map((item) => (
                 <Select.Option value={item.name} key={item.code}>
                   {item.name}
@@ -103,22 +160,29 @@ const Jobs = () => {
                 { value: 'Part time', label: 'Parttime' },
                 { value: 'Freelancer', label: 'Freelancer' }
               ]}
+              onChange={(e) => setPosition(e)}
             />
           </Form.Item>
           <Form.Item label='Job description'>
-            <Input.TextArea />
+            <Input.TextArea rows={6} onChange={(e) => setDescription(e.target.value.replace(/\n/g, ';'))} />
           </Form.Item>
           <Form.Item label='Job requirements'>
-            <Input.TextArea />
+            <Input.TextArea rows={6} onChange={(e) => setRequirements(e.target.value.replace(/\n/g, ';'))} />
+          </Form.Item>
+          <Form.Item label='Benefits'>
+            <Input.TextArea rows={6} onChange={(e) => setBenefits(e.target.value.replace(/\n/g, ';'))} />
+          </Form.Item>
+          <Form.Item label='Skills'>
+            <Input onChange={(e) => setSkills(e.target.value)} />
           </Form.Item>
           <Form.Item label='Working time'>
-            <Input disabled />
+            <Input onChange={(e) => setTime(e.target.value)} />
           </Form.Item>
           <Form.Item label='Deadline date'>
-            <DatePicker needConfirm />
+            <DatePicker onChange={onChangeDate} />
           </Form.Item>
           <Form.Item label='Salary'>
-            <Slider range defaultValue={[20, 50]} />
+            <Input onChange={(e) => setSalary(e.target.value)} />
           </Form.Item>
         </Form>
       </Modal>
