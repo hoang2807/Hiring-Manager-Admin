@@ -16,17 +16,60 @@ const Jobs = () => {
   const [salary, setSalary] = useState('')
   const [skills, setSkills] = useState('')
   const [benefits, setBenefits] = useState('')
-  const [mode, setMode] = useState('add')
+  const [job, setJob] = useState([])
+  // const [mode, setMode] = useState('add')
+
+  const resetState = () => {
+    setTitle('')
+    setLocation('')
+    setPosition('')
+    setDescription('')
+    setRequirements('')
+    setTime('')
+    setDate('')
+    setSalary('')
+    setSkills('')
+    setBenefits('')
+  }
 
   const showModal = () => {
     setIsModalOpen(true)
+    resetState()
   }
+
+  const showModalEdit = (id: string) => {
+    fetch(`http://localhost:3000/api/job/${id}`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data)
+        getList(sessionStorage.getItem('enterpriseId'))
+      })
+      .catch((error) => console.log(error))
+  }
+
   const handleCancel = () => {
     setIsModalOpen(false)
   }
 
   const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
     setDate(dateString)
+  }
+
+  const handleDelete = (id: string) => {
+    fetch(`http://localhost:3000/api/job/${id}`, {
+      method: 'delete',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.log(error))
   }
 
   const handleOk = () => {
@@ -56,21 +99,7 @@ const Jobs = () => {
         getList(sessionStorage.getItem('enterpriseId'))
       })
       .catch((error) => console.log(error))
-    // const data = {
-    //   title,
-    //   location,
-    //   description,
-    //   requirements,
-    //   position,
-    //   time,
-    //   date,
-    //   salary
-    // }
-
-    // console.log(data)
   }
-
-  const [job, setJob] = useState([])
 
   useEffect(() => {
     const id = window.sessionStorage.getItem('enterpriseId') || ''
@@ -78,7 +107,7 @@ const Jobs = () => {
   }, [])
 
   const getList = (id: string) => {
-    fetch(`${import.meta.env.VITE_BASE_API_URL}/job/${id}`)
+    fetch(`${import.meta.env.VITE_BASE_API_URL}/job/list/${id}`)
       .then((res) => res.json())
       .then((data) => {
         console.log(data)
@@ -124,10 +153,10 @@ const Jobs = () => {
               dataIndex: 'action',
               title: 'Action',
               key: 'action',
-              render: () => (
+              render: (item, record) => (
                 <ButtonGroup>
-                  <Button>Edit</Button>
-                  <Button type='primary' danger>
+                  <Button onClick={() => showModalEdit(record.id)}>Edit</Button>
+                  <Button type='primary' danger onClick={() => handleDelete(record.id)}>
                     Delete
                   </Button>
                 </ButtonGroup>
