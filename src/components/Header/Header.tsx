@@ -1,14 +1,14 @@
 import { Header as AntdHeader } from 'antd/es/layout/layout'
-import { ChildrenProps as Props } from '@/type'
+// import { ChildrenProps as Props } from '@/type'
 
-function Header({ children }: Props) {
+function Header() {
   return (
     <AntdHeader
       style={{
         backgroundColor: 'white'
       }}
     >
-      <div className='brand'>{children}</div>
+      {/* <div className='brand'>{children}</div> */}
     </AntdHeader>
   )
 }

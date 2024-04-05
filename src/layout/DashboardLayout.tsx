@@ -9,9 +9,7 @@ const DashboardLayout = () => {
     <Layout className='container'>
       <Sidebar />
       <Layout>
-        <Header>
-          <h1>Dashboard</h1>
-        </Header>
+        <Header />
         <Content className='content'>
           <Outlet />
         </Content>

@@ -1,8 +1,14 @@
-import { Button, Table, Tag } from 'antd'
+import { Button, Table, Tag, Modal } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { faker } from '@faker-js/faker'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import ListCard from '@/components/ListCard'
+import { CheckCircleOutlined, SyncOutlined } from '@ant-design/icons'
+import { Document, Page, pdfjs } from 'react-pdf'
+import pdf from '../../data/CV.pdf'
+import './home.scss'
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString()
 
 const generateData = () => {
   const data = []
@@ -25,6 +31,7 @@ const generateData = () => {
 const data = generateData()
 
 const Home = () => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   useEffect(() => {
     const id = window.sessionStorage.getItem('enterpriseId')
     fetch(`http://localhost:3000/api/job/${id}`)
@@ -32,20 +39,41 @@ const Home = () => {
       .then((data) => console.log(data))
       .catch((error) => console.error(error))
   }, [])
+
+  const showModal = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleOk = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
+
+  const [numPages, setNumPages] = useState<number>()
+  const [pageNumber, setPageNumber] = useState<number>(1)
+
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+    setNumPages(numPages)
+  }
+
   return (
     <>
       <ListCard />
-
+      <Modal title='CV' open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ width: '2200px' }}>
+        <div className='container-pdf'>
+          <Document file={pdf} onLoadSuccess={onDocumentLoadSuccess}>
+            <Page pageNumber={pageNumber} />
+          </Document>
+        </div>
+      </Modal>
       <Table
         dataSource={data}
         pagination={{ pageSize: 9 }}
         rowKey='id'
         columns={[
-          {
-            dataIndex: 'id',
-            title: 'ID'
-            // key: 'id'
-          },
           {
             dataIndex: 'name',
             title: 'Name'
@@ -75,7 +103,16 @@ const Home = () => {
             dataIndex: 'status',
             title: 'Status',
             // key: 'status',
-            render: (val) => (val ? <Tag>Active</Tag> : <Tag>Not Active</Tag>)
+            render: (val) =>
+              val ? (
+                <Tag icon={<CheckCircleOutlined />} color='success'>
+                  Đã phê duyệt
+                </Tag>
+              ) : (
+                <Tag icon={<SyncOutlined spin />} color='processing'>
+                  Đang chờ duyệt
+                </Tag>
+              )
           },
           {
             dataIndex: 'action',
@@ -83,9 +120,10 @@ const Home = () => {
             // key: 'action',
             render: () => (
               <ButtonGroup>
-                <Button>Edit</Button>
+                <Button onClick={showModal}>Xem CV</Button>
+                <Button type='primary'>Chấp nhận</Button>
                 <Button type='primary' danger>
-                  Delete
+                  Từ chối
                 </Button>
               </ButtonGroup>
             )
