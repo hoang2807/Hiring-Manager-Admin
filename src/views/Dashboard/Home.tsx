@@ -1,9 +1,9 @@
-import { Button, Table, Tag, Modal } from 'antd'
+import { Button, Table, Tag, Modal, Avatar, Divider, Flex, Card } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { faker } from '@faker-js/faker'
 import { useEffect, useState } from 'react'
 import ListCard from '@/components/ListCard'
-import { CheckCircleOutlined, SyncOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, GoogleOutlined, PhoneOutlined, SyncOutlined, UserOutlined } from '@ant-design/icons'
 import { Document, Page, pdfjs } from 'react-pdf'
 import pdf from '../../data/CV.pdf'
 import './home.scss'
@@ -67,7 +67,60 @@ const Home = () => {
           <Document file={pdf} onLoadSuccess={onDocumentLoadSuccess}>
             <Page pageNumber={pageNumber} />
           </Document>
-          <div className='flex flex-col'></div>
+          <div className='flex flex-col p-8 max-w-96 w-full'>
+            <div className='flex items-center justify-start w-full gap-5'>
+              <Avatar size='large' icon={<UserOutlined />} />
+              <div className='flex flex-col'>
+                <span>Họ tên</span>
+                <span>email</span>
+                <span>sdt</span>
+              </div>
+            </div>
+            <Divider />
+            <span>Trạng thái CV</span>
+            <Table
+              pagination={false}
+              columns={[
+                {
+                  title: 'Trạng thái',
+                  dataIndex: 'status',
+                  key: 'status',
+                  render: (val) =>
+                    val ? (
+                      <Tag icon={<CheckCircleOutlined />} color='success'>
+                        Đã phê duyệt
+                      </Tag>
+                    ) : (
+                      <Tag icon={<SyncOutlined spin />} color='processing'>
+                        Đang chờ duyệt
+                      </Tag>
+                    )
+                }
+              ]}
+              dataSource={[
+                {
+                  status: true
+                }
+              ]}
+            />
+            <Flex vertical gap='middle' className='mt-4'>
+              <Button>Cập nhật trạng thái CV</Button>
+              <Button>Tải CV</Button>
+            </Flex>
+            <Divider />
+            <Card title='Thông tin liên hệ' bordered={false}>
+              <Flex vertical gap='middle'>
+                <Flex gap='middle' className='bg-[#003eb3] p-2 text-[#fff] rounded-md'>
+                  <GoogleOutlined />
+                  <p>gmail</p>
+                </Flex>
+                <Flex gap='middle' className='bg-[#ff85c0] p-2 text-[#fff] rounded-md'>
+                  <PhoneOutlined />
+                  <p>123456</p>
+                </Flex>
+              </Flex>
+            </Card>
+          </div>
         </div>
       </Modal>
       <Table
