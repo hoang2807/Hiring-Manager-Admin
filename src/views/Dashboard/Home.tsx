@@ -67,6 +67,7 @@ const Home = () => {
           <Document file={pdf} onLoadSuccess={onDocumentLoadSuccess}>
             <Page pageNumber={pageNumber} />
           </Document>
+          <div className='flex flex-col'></div>
         </div>
       </Modal>
       <Table

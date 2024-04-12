@@ -6,7 +6,7 @@ import { Outlet } from 'react-router-dom'
 
 const DashboardLayout = () => {
   return (
-    <Layout className='container'>
+    <Layout className='wrapper'>
       <Sidebar />
       <Layout>
         <Header />
