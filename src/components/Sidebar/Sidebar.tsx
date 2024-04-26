@@ -8,7 +8,7 @@ const items = [
   { label: <Link to=''>Home</Link>, key: 'home', icon: <HomeOutlined /> },
   { label: <Link to='jobs'>Jobs</Link>, key: 'jobs', icon: <ReadOutlined /> },
   { label: <Link to='about-us'>About us</Link>, key: 'about us', icon: <SolutionOutlined /> },
-  { label: <Link to='logout'>About us</Link>, key: 'logout', icon: <LogoutOutlined /> }
+  { label: <Link to='logout'>logout</Link>, key: 'logout', icon: <LogoutOutlined /> }
 ]
 
 const Sidebar = () => {

@@ -42,7 +42,7 @@ const Login = observer(() => {
   // }
 
   return (
-    <Row justify='center' align='middle' className='container'>
+    <Row justify='center' align='middle' className='h-lvh'>
       <Col span={5}>
         <Card>
           <Form layout='vertical' onFinish={onSubmit}>
