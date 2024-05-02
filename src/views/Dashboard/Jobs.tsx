@@ -1,4 +1,4 @@
-import { Button, DatePicker, DatePickerProps, Form, Input, Modal, Select, Slider, Space, Table } from 'antd'
+import { Button, DatePicker, DatePickerProps, Form, Input, Modal, Select, Space, Table } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { useEffect, useState } from 'react'
 import Cities from '@/data/cities.json'
@@ -47,7 +47,7 @@ const Jobs = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data)
-        getList(sessionStorage.getItem('enterpriseId'))
+        getList(sessionStorage.getItem('enterpriseId') || '')
       })
       .catch((error) => console.log(error))
   }

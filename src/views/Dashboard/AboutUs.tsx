@@ -2,17 +2,17 @@ import { Button, Card, Form, Input } from 'antd'
 import { useState } from 'react'
 
 const AboutUs = () => {
-  const [status, setStatus] = useState<boolean>(false)
-  const onEdit = () => {
+  const [status, setStatus] = useState<boolean>(true)
+  const changeStatus = () => {
     setStatus(!status)
   }
 
   const handleEdit = () => {
-    onEdit()
+    changeStatus()
   }
 
   const handleSave = () => {
-    onEdit()
+    changeStatus()
   }
 
   return (
@@ -65,10 +65,10 @@ Luôn so sánh với những cá nhân xuất sắc nhất trong lĩnh vực đa
 '
           />
         </Form.Item>
-        {status ? <Button onClick={handleSave}>Save</Button> : <Button onClick={handleEdit}>Edit</Button>}
-        <Button type='primary' danger>
+        {status ? <Button onClick={handleEdit}>Edit</Button> : <Button onClick={handleSave}>Save</Button>}
+        {/* <Button type='primary' danger>
           Delete
-        </Button>
+        </Button> */}
       </Form>
     </Card>
   )

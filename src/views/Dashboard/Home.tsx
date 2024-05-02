@@ -7,6 +7,8 @@ import { CheckCircleOutlined, GoogleOutlined, PhoneOutlined, SyncOutlined, UserO
 import { Document, Page, pdfjs } from 'react-pdf'
 import pdf from '../../data/CV.pdf'
 import './home.scss'
+import 'react-pdf/dist/esm/Page/TextLayer.css'
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString()
 
@@ -80,6 +82,7 @@ const Home = () => {
             <span>Trạng thái CV</span>
             <Table
               pagination={false}
+              rowKey={'1'}
               columns={[
                 {
                   title: 'Trạng thái',
