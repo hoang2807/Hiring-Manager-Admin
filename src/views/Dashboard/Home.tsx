@@ -67,7 +67,7 @@ const Home = () => {
       <Modal title='CV' open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ width: '2200px' }}>
         <div className='container-pdf'>
           <Document file={pdf} onLoadSuccess={onDocumentLoadSuccess}>
-            <Page pageNumber={pageNumber} />
+            <Page pageNumber={1} />
           </Document>
           <div className='flex flex-col p-8 max-w-96 w-full'>
             <div className='flex items-center justify-start w-full gap-5'>

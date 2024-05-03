@@ -1,8 +1,53 @@
-import { Button, Card, Form, Input } from 'antd'
-import { useState } from 'react'
+import { InboxOutlined } from '@ant-design/icons'
+import { Button, Card, Form, Input, InputRef, UploadProps, message } from 'antd'
+import Dragger from 'antd/es/upload/Dragger'
+import { useEffect, useRef, useState } from 'react'
+
+const props: UploadProps = {
+  name: 'file',
+  multiple: true,
+  action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
+  onChange(info) {
+    const { status } = info.file
+    if (status !== 'uploading') {
+      console.log(info.file, info.fileList)
+    }
+    if (status === 'done') {
+      message.success(`${info.file.name} file uploaded successfully.`)
+    } else if (status === 'error') {
+      message.error(`${info.file.name} file upload failed.`)
+    }
+  },
+  onDrop(e) {
+    console.log('Dropped files', e.dataTransfer.files)
+  }
+}
 
 const AboutUs = () => {
   const [status, setStatus] = useState<boolean>(true)
+  const nameRef = useRef<InputRef | null>(null)
+  const emailRef = useRef<InputRef | null>(null)
+  const addressRef = useRef<InputRef | null>(null)
+  const aboutMeRef = useRef<InputRef | null>(null)
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [address, setAddress] = useState('')
+  const [aboutMe, setAboutMe] = useState('')
+
+  useEffect(() => {
+    const id = sessionStorage.getItem('enterpriseId')
+    fetch(`${import.meta.env.VITE_BASE_API_URL}/enterprise/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data)
+        setName(data?.data?.name)
+        setEmail(data?.data?.email)
+        setAddress(data?.data?.address)
+        setAboutMe(data?.data?.about_me)
+      })
+      .catch((error) => console.log(error))
+  }, [])
+
   const changeStatus = () => {
     setStatus(!status)
   }
@@ -19,51 +64,28 @@ const AboutUs = () => {
     <Card>
       <Form layout='vertical'>
         <Form.Item label='Name'>
-          <Input disabled={status} />
+          <Input disabled={status} ref={nameRef} value={name} />
         </Form.Item>
         <Form.Item label='Email'>
-          <Input type='email' disabled={status} />
+          <Input type='email' disabled={status} ref={emailRef} value={email} />
         </Form.Item>
         <Form.Item label='Address'>
-          <Input disabled={status} />
+          <Input disabled={status} ref={addressRef} value={address} />
+        </Form.Item>
+        <Form.Item label='Upload avatar'>
+          <Dragger {...props} disabled={status}>
+            <p className='ant-upload-drag-icon'>
+              <InboxOutlined />
+            </p>
+            <p className='ant-upload-text'>Click or drag file to this area to upload</p>
+            <p className='ant-upload-hint'>
+              Support for a single or bulk upload. Strictly prohibited from uploading company data or other banned
+              files.
+            </p>
+          </Dragger>
         </Form.Item>
         <Form.Item label='About me'>
-          <Input.TextArea
-            disabled={status}
-            rows={6}
-            maxLength={100}
-            value='Công ty Cổ phần Smilee Việt Nam được thành lập vào ngày 08/10/2018 mục tiêu trở thành công ty về các nhãn hiệu chăm sóc sức khoẻ số 1 Đông Nam Á.
-
-Năm 2019, Smilee vinh dự được bộ Khoa học & Công nghệ đầu tư, nhận giải thưởng Top Startup cuộc thi khởi nghiệp toàn cầu VietChallenge và Giải nhất cuộc thi WISE - Sáng kiến hỗ trợ Phụ nữ Khởi nghiệp và Kinh doanh năm 2019.
-
- 06 giá trị cốt lõi tại Smilee Việt Nam
-
-1. Học hỏi và cải tiến không ngừng
-
-Luôn cởi mở, tiếp thu ý kiến đóng góp và cập nhật kiến thức liên tục không có điểm dừng
-
-2. Kỷ luật thép
-
-Lời nói và hành động luôn thống nhất với mục tiêu đặt ra, không để mục tiêu bị ảnh hưởng bởi bất kỳ yếu tố nào
-
-3. Ngay thẳng - thẳng thắn
-
-Sẵn sàng làm điều khó nhưng đúng đắn
-
-4. Trách nhiệm cao - Quyết liệt
-
-Tận tâm, tận tình, có trách nhiệm với công việc và quyết tâm hoàn thành mục tiêu đã đặt ra
-
-5. Luôn vị mục tiêu chung
-
-Luôn hành động vì mục tiêu chung, không dựa trên mục tiêu cá nhân nào khác
-
-6. Tiêu chuẩn cao
-
-Luôn so sánh với những cá nhân xuất sắc nhất trong lĩnh vực đang làm
-
-'
-          />
+          <Input.TextArea disabled={status} rows={6} maxLength={100} value={aboutMe} ref={aboutMeRef} />
         </Form.Item>
         {status ? <Button onClick={handleEdit}>Edit</Button> : <Button onClick={handleSave}>Save</Button>}
         {/* <Button type='primary' danger>
