@@ -1,0 +1,155 @@
+import ListCard from '@/components/ListCard'
+import { GoogleOutlined, PhoneOutlined } from '@ant-design/icons'
+import { Avatar, Button, Card, Divider, Flex, Modal, Table } from 'antd'
+import ButtonGroup from 'antd/es/button/button-group'
+import { useEffect, useState } from 'react'
+import { Document, Page, pdfjs } from 'react-pdf'
+import pdf from '../../data/CV.pdf'
+import './home.scss'
+import 'react-pdf/dist/esm/Page/TextLayer.css'
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString()
+
+function PublicCv() {
+  const [data, setData] = useState([])
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [avatar, setAvatar] = useState('')
+  const [cv, setCv] = useState()
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+
+  const showModal = async (id: string) => {
+    setIsModalOpen(true)
+
+    try {
+      const data = await (await fetch(`${import.meta.env.VITE_BASE_API_URL}/user/${id}`)).json()
+      console.log(data)
+      setName(data.data?.fullName)
+      setEmail(data.data?.email)
+      setPhone(data.data?.phone_number)
+      setAvatar(data.data?.avatar)
+      setCv(data.data?.cv)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleOk = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
+
+  // function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+  //   setNumPages(numPages)
+  // }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      const data = await (await fetch(`${import.meta.env.VITE_BASE_API_URL}/user/cv`)).json()
+      setData(data?.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  return (
+    <>
+      <ListCard />
+      <Modal title='CV' open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ width: '2200px' }}>
+        <div className='container-pdf'>
+          <iframe src={`http://localhost:3000/public/${cv}`} width='100%' height='800px' />
+          <div className='flex flex-col p-8 max-w-96 w-full'>
+            <div className='flex items-center justify-start w-full gap-5'>
+              <Avatar size='large' src={`http://localhost:3000/public/${avatar}`} />
+              <div className='flex flex-col'>
+                <span>{name}</span>
+                <span>{email}</span>
+                <span>{phone}</span>
+              </div>
+            </div>
+            <Divider />
+            <span>Trạng thái CV</span>
+
+            <Flex vertical gap='middle' className='mt-4'>
+              <Button>Tải CV</Button>
+            </Flex>
+            <Divider />
+            <Card title='Thông tin liên hệ' bordered={false}>
+              <Flex vertical gap='middle'>
+                <Flex gap='middle' className='bg-[#003eb3] p-2 text-[#fff] rounded-md'>
+                  <GoogleOutlined />
+                  <p>{email}</p>
+                </Flex>
+                <Flex gap='middle' className='bg-[#ff85c0] p-2 text-[#fff] rounded-md'>
+                  <PhoneOutlined />
+                  <p>{phone}</p>
+                </Flex>
+              </Flex>
+            </Card>
+          </div>
+        </div>
+      </Modal>
+      <Table
+        dataSource={data}
+        pagination={{ pageSize: 9 }}
+        rowKey='id'
+        columns={[
+          {
+            dataIndex: 'fullName',
+            title: 'Name'
+            // key: 'name'
+          },
+          {
+            dataIndex: 'email',
+            title: 'Email'
+            // key: 'email'
+          },
+          {
+            dataIndex: 'phone_number',
+            title: 'Phone Number'
+            // key: 'phone_number'
+          },
+          {
+            dataIndex: 'gender',
+            title: 'Gender',
+            // key: 'gender'
+            render: (gender) => (gender ? <>Male</> : <>Female</>)
+          },
+          {
+            dataIndex: 'address',
+            title: 'Address'
+            // key: 'address'
+          },
+          {
+            dataIndex: 'action',
+            title: 'Action',
+            // key: 'action',
+            render: (item, record) => (
+              <ButtonGroup>
+                <Button
+                  onClick={() => {
+                    showModal(record.id)
+                  }}
+                >
+                  Xem CV
+                </Button>
+              </ButtonGroup>
+            )
+          }
+        ]}
+      />
+    </>
+  )
+}
+
+export default PublicCv

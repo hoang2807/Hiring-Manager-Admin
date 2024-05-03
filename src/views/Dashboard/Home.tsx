@@ -54,19 +54,19 @@ const Home = () => {
     setIsModalOpen(false)
   }
 
-  const [numPages, setNumPages] = useState<number>()
-  const [pageNumber, setPageNumber] = useState<number>(1)
+  // const [numPages, setNumPages] = useState<number>()
+  // const [pageNumber, setPageNumber] = useState<number>(1)
 
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-    setNumPages(numPages)
-  }
+  // function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+  //   setNumPages(numPages)
+  // }
 
   return (
     <>
       <ListCard />
       <Modal title='CV' open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ width: '2200px' }}>
         <div className='container-pdf'>
-          <Document file={pdf} onLoadSuccess={onDocumentLoadSuccess}>
+          <Document file={pdf}>
             <Page pageNumber={1} />
           </Document>
           <div className='flex flex-col p-8 max-w-96 w-full'>
