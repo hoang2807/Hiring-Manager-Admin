@@ -1,6 +1,6 @@
 import ListCard from '@/components/ListCard'
-import { GoogleOutlined, PhoneOutlined } from '@ant-design/icons'
-import { Avatar, Button, Card, Divider, Flex, Modal, Table } from 'antd'
+import { GoogleOutlined, PhoneOutlined, SearchOutlined } from '@ant-design/icons'
+import { Avatar, Button, Card, Divider, Flex, Input, Modal, Space, Table } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { useEffect, useState } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
@@ -99,6 +99,10 @@ function PublicCv() {
           </div>
         </div>
       </Modal>
+      <Space.Compact size='large'>
+        <Input addonBefore={<SearchOutlined />} placeholder='search' className='mb-4' />
+      </Space.Compact>
+
       <Table
         dataSource={data}
         pagination={{ pageSize: 9 }}

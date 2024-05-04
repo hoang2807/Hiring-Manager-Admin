@@ -36,7 +36,6 @@ const Login = observer(() => {
         body: JSON.stringify({ email: data.email, password: data.password })
       })
     ).json()
-    console.log(res)
     if (res.statusCode == HttpStatusCode.Unauthorized) return openNotification('Username or password invalid')
 
     if (res.statusCode === HttpStatusCode.InternalServerError) return openNotification('Internal Server Error ')
