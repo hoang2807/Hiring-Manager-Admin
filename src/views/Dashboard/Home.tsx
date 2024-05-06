@@ -1,5 +1,4 @@
-import { Button, Table, Tag, Modal, Avatar, Divider, Flex, Card, Dropdown, MenuProps } from 'antd'
-import ButtonGroup from 'antd/es/button/button-group'
+import { Button, Table, Tag, Modal, Avatar, Divider, Flex, Card, Dropdown, MenuProps, notification } from 'antd'
 import { useEffect, useState } from 'react'
 import ListCard from '@/components/ListCard'
 import { CheckCircleOutlined, GoogleOutlined, PhoneOutlined, SyncOutlined } from '@ant-design/icons'
@@ -7,6 +6,7 @@ import Copy from '@/components/Copy'
 // import { Document, Page, pdfjs } from 'react-pdf'
 // import pdf from '../../data/CV.pdf'
 import './home.scss'
+import { Status } from '@/constants/ApplicationStatus.enum'
 // import 'react-pdf/dist/esm/Page/TextLayer.css'
 // import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 
@@ -32,33 +32,32 @@ import './home.scss'
 
 // const data = generateData()
 
-const items: MenuProps['items'] = [
-  {
-    key: '1',
-    label: (
-      <a target='_blank' rel='noopener noreferrer' href='https://www.antgroup.com'>
-        Chấp nhận
-      </a>
-    )
-  },
-  {
-    key: '2',
-    label: (
-      <a target='_blank' rel='noopener noreferrer' href='https://www.aliyun.com'>
-        Từ chối
-      </a>
-    )
-  }
-]
-
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [data, setData] = useState([])
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [avatar, setAvatar] = useState('')
+  const [id, setId] = useState(0)
+  const [name, setName] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [phone, setPhone] = useState<string>('')
+  const [avatar, setAvatar] = useState<string>('')
+  const [status, setStatus] = useState<string>('')
   const [cv, setCv] = useState()
+
+  const [api, contextHolder] = notification.useNotification()
+
+  const successNotification = (message: string) => {
+    api.success({
+      message: `success`,
+      description: message
+    })
+  }
+
+  const errorNotification = (message: string) => {
+    api.error({
+      message: `Error`,
+      description: message
+    })
+  }
 
   useEffect(() => {
     const id = window.sessionStorage.getItem('enterpriseId') || ''
@@ -69,22 +68,30 @@ const Home = () => {
     try {
       const data = await (await fetch(`${import.meta.env.VITE_BASE_API_URL}/application/${id}`)).json()
       setData(data?.data)
-    } catch (error) {
-      console.log(error)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(error)
+        errorNotification(error.message)
+      }
     }
   }
 
-  const showModal = async (id: string) => {
+  const showModal = async (userId: number, id: number) => {
     setIsModalOpen(true)
     try {
-      const data = await (await fetch(`${import.meta.env.VITE_BASE_API_URL}/user/${id}`)).json()
+      const data = await (await fetch(`${import.meta.env.VITE_BASE_API_URL}/user/${userId}`)).json()
+      await updateStatus(id, Status.WATCHED)
+      setId(id)
       setName(data.data?.fullName)
       setEmail(data.data?.email)
       setPhone(data.data?.phone_number)
       setAvatar(data.data?.avatar)
       setCv(data.data?.cv)
-    } catch (error) {
-      console.log(error)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(error)
+        errorNotification(error.message)
+      }
     }
   }
 
@@ -103,6 +110,49 @@ const Home = () => {
     setIsModalOpen(false)
   }
 
+  const handleAccept = async (id: number) => {
+    await updateStatus(id, Status.SUITABLE)
+  }
+
+  const handleDecline = async (id: number) => {
+    updateStatus(id, Status.NOT_SUITABLE)
+  }
+
+  const updateStatus = async (id: number, status: string) => {
+    try {
+      console.log(id)
+      const data = await (
+        await fetch(`${import.meta.env.VITE_BASE_API_URL}/application/${id}`, {
+          method: 'put',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status })
+        })
+      ).json()
+
+      setStatus(data.data?.status)
+      if (status !== Status.WATCHED) successNotification('Update status success')
+      return data
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(error)
+        errorNotification(error.message)
+      }
+    }
+  }
+
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: <button onClick={() => handleAccept(id)}>Chấp nhận</button>
+    },
+    {
+      key: '2',
+      label: <button onClick={() => handleDecline(id)}>Từ chối</button>
+    }
+  ]
+
   // const [numPages, setNumPages] = useState<number>()
   // const [pageNumber, setPageNumber] = useState<number>(1)
 
@@ -112,6 +162,7 @@ const Home = () => {
 
   return (
     <>
+      {contextHolder}
       <ListCard />
       <Modal title='CV' open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ width: '2200px' }}>
         <div className='container-pdf'>
@@ -135,21 +186,31 @@ const Home = () => {
                   title: 'Trạng thái',
                   dataIndex: 'status',
                   key: 'status',
-                  render: (val) =>
-                    val ? (
-                      <Tag icon={<CheckCircleOutlined />} color='success'>
-                        Đã phê duyệt
-                      </Tag>
-                    ) : (
-                      <Tag icon={<SyncOutlined spin />} color='processing'>
-                        Đang chờ duyệt
-                      </Tag>
-                    )
+                  render: (item, val) => {
+                    if (val.status == Status.WATCHED)
+                      return (
+                        <Tag icon={<CheckCircleOutlined />} color='default'>
+                          Đã xem
+                        </Tag>
+                      )
+                    if (val.status == Status.SUITABLE)
+                      return (
+                        <Tag icon={<CheckCircleOutlined />} color='success'>
+                          Đã Chấp nhận
+                        </Tag>
+                      )
+                    if (val.status == Status.NOT_SUITABLE)
+                      return (
+                        <Tag icon={<CheckCircleOutlined />} color='red'>
+                          Đã từ chối
+                        </Tag>
+                      )
+                  }
                 }
               ]}
               dataSource={[
                 {
-                  status: true
+                  status: status
                 }
               ]}
             />
@@ -188,6 +249,10 @@ const Home = () => {
         rowKey='id'
         columns={[
           {
+            dataIndex: 'id',
+            title: 'Id'
+          },
+          {
             dataIndex: 'fullName',
             title: 'FullName'
             // key: 'name'
@@ -221,14 +286,16 @@ const Home = () => {
             dataIndex: 'action',
             title: 'Action',
             // key: 'action',
-            render: (item, record) => (
-              <ButtonGroup>
-                <Button onClick={() => showModal(record.userId)}>Xem CV</Button>
-                <Button type='primary'>Chấp nhận</Button>
-                <Button type='primary' danger>
+            render: (item, record: { userId: number; id: number; status: string }) => (
+              <Flex gap='small'>
+                <Button onClick={() => showModal(record.userId, record.id)}>Xem CV</Button>
+                <Button type='primary' onClick={() => handleAccept(record.id)}>
+                  Chấp nhận
+                </Button>
+                <Button type='primary' danger onClick={() => handleDecline(record.id)}>
                   Từ chối
                 </Button>
-              </ButtonGroup>
+              </Flex>
             )
           }
         ]}

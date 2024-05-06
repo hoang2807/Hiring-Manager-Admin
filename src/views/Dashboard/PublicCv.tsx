@@ -22,9 +22,8 @@ function PublicCv() {
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
-  const showModal = async (id: string) => {
+  const showModal = async (id: number) => {
     setIsModalOpen(true)
-
     try {
       const data = await (await fetch(`${import.meta.env.VITE_BASE_API_URL}/user/${id}`)).json()
       console.log(data)
@@ -145,7 +144,7 @@ function PublicCv() {
             dataIndex: 'action',
             title: 'Action',
             // key: 'action',
-            render: (item, record) => (
+            render: (item, record: { id: number }) => (
               <ButtonGroup>
                 <Button
                   onClick={() => {

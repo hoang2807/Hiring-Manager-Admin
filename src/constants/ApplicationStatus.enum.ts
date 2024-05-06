@@ -1,0 +1,6 @@
+export enum Status {
+  NOT_SEEN = 'NOT_SEEN',
+  WATCHED = 'WATCHED',
+  SUITABLE = 'SUITABLE',
+  NOT_SUITABLE = 'NOT_SUITABLE'
+}
