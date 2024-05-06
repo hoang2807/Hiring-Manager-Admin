@@ -3,11 +3,12 @@ import ButtonGroup from 'antd/es/button/button-group'
 import { useEffect, useState } from 'react'
 import ListCard from '@/components/ListCard'
 import { CheckCircleOutlined, GoogleOutlined, PhoneOutlined, SyncOutlined } from '@ant-design/icons'
+import Copy from '@/components/Copy'
 // import { Document, Page, pdfjs } from 'react-pdf'
 // import pdf from '../../data/CV.pdf'
 import './home.scss'
-import 'react-pdf/dist/esm/Page/TextLayer.css'
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
+// import 'react-pdf/dist/esm/Page/TextLayer.css'
+// import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString()
 
@@ -162,13 +163,19 @@ const Home = () => {
             <Divider />
             <Card title='Thông tin liên hệ' bordered={false}>
               <Flex vertical gap='middle'>
-                <Flex gap='middle' className='bg-[#003eb3] p-2 text-[#fff] rounded-md'>
-                  <GoogleOutlined />
-                  <p>{email}</p>
+                <Flex justify='space-between' className='bg-[#003eb3] p-2 text-[#fff] rounded-md'>
+                  <Flex gap='middle'>
+                    <GoogleOutlined />
+                    <p>{email}</p>
+                  </Flex>
+                  <Copy text={email} />
                 </Flex>
-                <Flex gap='middle' className='bg-[#ff85c0] p-2 text-[#fff] rounded-md'>
-                  <PhoneOutlined />
-                  <p>{phone}</p>
+                <Flex justify='space-between' className='bg-[#ff85c0] p-2 text-[#fff] rounded-md'>
+                  <Flex gap='middle'>
+                    <PhoneOutlined />
+                    <p>{phone}</p>
+                  </Flex>
+                  <Copy text={phone} />
                 </Flex>
               </Flex>
             </Card>

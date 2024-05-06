@@ -3,13 +3,14 @@ import { GoogleOutlined, PhoneOutlined, SearchOutlined } from '@ant-design/icons
 import { Avatar, Button, Card, Divider, Flex, Input, Modal, Space, Table } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { useEffect, useState } from 'react'
-import { Document, Page, pdfjs } from 'react-pdf'
-import pdf from '../../data/CV.pdf'
+// import { Document, Page, pdfjs } from 'react-pdf'
+// import pdf from '../../data/CV.pdf'
 import './home.scss'
-import 'react-pdf/dist/esm/Page/TextLayer.css'
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
+// import 'react-pdf/dist/esm/Page/TextLayer.css'
+// import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
+import Copy from '@/components/Copy'
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString()
+// pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString()
 
 function PublicCv() {
   const [data, setData] = useState([])
@@ -86,13 +87,19 @@ function PublicCv() {
             <Divider />
             <Card title='Thông tin liên hệ' bordered={false}>
               <Flex vertical gap='middle'>
-                <Flex gap='middle' className='bg-[#003eb3] p-2 text-[#fff] rounded-md'>
-                  <GoogleOutlined />
-                  <p>{email}</p>
+                <Flex justify='space-between' className='bg-[#003eb3] p-2 text-[#fff] rounded-md'>
+                  <Flex gap='middle'>
+                    <GoogleOutlined />
+                    <p>{email}</p>
+                  </Flex>
+                  <Copy text={email} />
                 </Flex>
-                <Flex gap='middle' className='bg-[#ff85c0] p-2 text-[#fff] rounded-md'>
-                  <PhoneOutlined />
-                  <p>{phone}</p>
+                <Flex justify='space-between' className='bg-[#ff85c0] p-2 text-[#fff] rounded-md'>
+                  <Flex gap='middle'>
+                    <PhoneOutlined />
+                    <p>{phone}</p>
+                  </Flex>
+                  <Copy text={phone} />
                 </Flex>
               </Flex>
             </Card>
