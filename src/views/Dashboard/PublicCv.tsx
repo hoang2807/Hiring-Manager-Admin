@@ -70,7 +70,7 @@ function PublicCv() {
           <iframe src={`http://localhost:3000/public/${cv}`} width='100%' height='800px' />
           <div className='flex flex-col p-8 max-w-96 w-full'>
             <div className='flex items-center justify-start w-full gap-5'>
-              <Avatar size='large' src={`http://localhost:3000/public/${avatar}`} />
+              <Avatar size={64} src={`http://localhost:3000/public/${avatar}`} />
               <div className='flex flex-col'>
                 <span>{name}</span>
                 <span>{email}</span>
