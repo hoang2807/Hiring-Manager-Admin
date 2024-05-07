@@ -1,6 +1,6 @@
 import ListCard from '@/components/ListCard'
 import { GoogleOutlined, PhoneOutlined, SearchOutlined } from '@ant-design/icons'
-import { Avatar, Button, Card, Divider, Flex, Input, Modal, Space, Table } from 'antd'
+import { Avatar, Button, Card, Divider, Flex, Input, Modal, Space, Table, notification } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { useEffect, useState } from 'react'
 // import { Document, Page, pdfjs } from 'react-pdf'
@@ -19,8 +19,16 @@ function PublicCv() {
   const [phone, setPhone] = useState('')
   const [avatar, setAvatar] = useState('')
   const [cv, setCv] = useState()
-
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+
+  const [api, contextHolder] = notification.useNotification()
+
+  const errorNotification = (message: string) => {
+    api.error({
+      message: `Error`,
+      description: message
+    })
+  }
 
   const showModal = async (id: number) => {
     setIsModalOpen(true)
@@ -45,6 +53,27 @@ function PublicCv() {
     setIsModalOpen(false)
   }
 
+  const handleSearch = async (skill: string) => {
+    try {
+      const data = await (
+        await fetch(`${import.meta.env.VITE_BASE_API_URL}/user/search`, {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ skill })
+        })
+      ).json()
+
+      setData(data?.data)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error)
+        errorNotification(error.message)
+      }
+    }
+  }
+
   // function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
   //   setNumPages(numPages)
   // }
@@ -64,6 +93,7 @@ function PublicCv() {
 
   return (
     <>
+      {contextHolder}
       <ListCard />
       <Modal title='CV' open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={{ width: '2200px' }}>
         <div className='container-pdf'>
@@ -106,7 +136,13 @@ function PublicCv() {
         </div>
       </Modal>
       <Space.Compact size='large'>
-        <Input addonBefore={<SearchOutlined />} placeholder='search' className='mb-4' />
+        <Input
+          addonBefore={<SearchOutlined />}
+          placeholder='search'
+          className='mb-4'
+          onPressEnter={(e) => handleSearch((e.target as HTMLInputElement).value)}
+          onChange={(e) => handleSearch(e.target?.value)}
+        />
       </Space.Compact>
 
       <Table
