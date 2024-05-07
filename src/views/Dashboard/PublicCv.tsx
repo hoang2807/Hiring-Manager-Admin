@@ -1,6 +1,6 @@
 import ListCard from '@/components/ListCard'
 import { GoogleOutlined, PhoneOutlined, SearchOutlined } from '@ant-design/icons'
-import { Avatar, Button, Card, Divider, Flex, Input, Modal, Space, Table, notification } from 'antd'
+import { Avatar, Button, Card, Divider, Flex, Input, Modal, Space, Table, Typography, notification } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { useEffect, useState } from 'react'
 import './home.scss'
@@ -98,8 +98,7 @@ function PublicCv() {
               </div>
             </div>
             <Divider />
-            <span>Trạng thái CV</span>
-
+            <Typography.Title level={3}>Trạng thái CV</Typography.Title>
             <Flex vertical gap='middle' className='mt-4'>
               <Button>Tải CV</Button>
             </Flex>

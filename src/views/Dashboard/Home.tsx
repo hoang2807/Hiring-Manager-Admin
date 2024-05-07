@@ -1,10 +1,26 @@
-import { Button, Table, Tag, Modal, Avatar, Divider, Flex, Card, Dropdown, MenuProps, notification } from 'antd'
+import {
+  Button,
+  Table,
+  Tag,
+  Modal,
+  Avatar,
+  Divider,
+  Flex,
+  Card,
+  Dropdown,
+  MenuProps,
+  notification,
+  Slider,
+  Typography
+} from 'antd'
 import { useEffect, useState } from 'react'
 import ListCard from '@/components/ListCard'
 import { CheckCircleOutlined, GoogleOutlined, PhoneOutlined, SyncOutlined } from '@ant-design/icons'
 import Copy from '@/components/Copy'
 import './home.scss'
 import { Status } from '@/constants/ApplicationStatus.enum'
+
+const { Title } = Typography
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
@@ -143,7 +159,7 @@ const Home = () => {
               </div>
             </div>
             <Divider />
-            <span>Trạng thái CV</span>
+            <Title level={3}>Trạng thái CV</Title>
             <Table
               pagination={false}
               rowKey={'status'}
@@ -184,7 +200,9 @@ const Home = () => {
               <Dropdown menu={{ items }} placement='bottom'>
                 <Button>Cập nhật trạng thái CV</Button>
               </Dropdown>
-
+              <Title level={3}>Điểm</Title>
+              <Slider min={1} max={10} />
+              <Button>Lưu điểm</Button>
               <Button onClick={handleDownloadCV}>Tải CV</Button>
             </Flex>
             <Divider />
@@ -216,27 +234,28 @@ const Home = () => {
         columns={[
           {
             dataIndex: 'id',
-            title: 'Id'
+            title: 'Id',
+            align: 'center'
           },
           {
             dataIndex: 'fullName',
-            title: 'FullName'
-            // key: 'name'
+            title: 'FullName',
+            align: 'center'
           },
           {
             dataIndex: 'email',
-            title: 'Email'
-            // key: 'email'
+            title: 'Email',
+            align: 'center'
           },
           {
             dataIndex: 'phone_number',
-            title: 'Phone Number'
-            // key: 'phone_number'
+            title: 'Phone Number',
+            align: 'center'
           },
           {
             dataIndex: 'status',
             title: 'Status',
-            // key: 'status',
+            align: 'center',
             render: (val) =>
               val === 'SUITABLE' || val === 'NOT_SUITABLE' ? (
                 <Tag icon={<CheckCircleOutlined />} color='success'>
@@ -251,9 +270,9 @@ const Home = () => {
           {
             dataIndex: 'action',
             title: 'Action',
-            // key: 'action',
+            align: 'center',
             render: (item, record: { userId: number; id: number; status: string }) => (
-              <Flex gap='small'>
+              <Flex gap='small' justify='center'>
                 <Button onClick={() => showModal(record.userId, record.id)}>Xem CV</Button>
                 <Button type='primary' onClick={() => handleAccept(record.id)}>
                   Chấp nhận
