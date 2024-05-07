@@ -3,34 +3,8 @@ import { useEffect, useState } from 'react'
 import ListCard from '@/components/ListCard'
 import { CheckCircleOutlined, GoogleOutlined, PhoneOutlined, SyncOutlined } from '@ant-design/icons'
 import Copy from '@/components/Copy'
-// import { Document, Page, pdfjs } from 'react-pdf'
-// import pdf from '../../data/CV.pdf'
 import './home.scss'
 import { Status } from '@/constants/ApplicationStatus.enum'
-// import 'react-pdf/dist/esm/Page/TextLayer.css'
-// import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
-
-// pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString()
-
-// const generateData = () => {
-//   const data = []
-
-//   for (let i = 0; i < 32; ++i) {
-//     data.push({
-//       id: faker.string.uuid(),
-//       name: faker.person.fullName(),
-//       email: faker.internet.email(),
-//       phone_number: faker.phone.number(),
-//       gender: faker.person.sex(),
-//       address: faker.location.streetAddress(),
-//       status: Math.random() > 0.5 ? true : false
-//     })
-//   }
-
-//   return data
-// }
-
-// const data = generateData()
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
@@ -120,7 +94,6 @@ const Home = () => {
 
   const updateStatus = async (id: number, status: string) => {
     try {
-      console.log(id)
       const data = await (
         await fetch(`${import.meta.env.VITE_BASE_API_URL}/application/${id}`, {
           method: 'put',
@@ -152,13 +125,6 @@ const Home = () => {
       label: <button onClick={() => handleDecline(id)}>Từ chối</button>
     }
   ]
-
-  // const [numPages, setNumPages] = useState<number>()
-  // const [pageNumber, setPageNumber] = useState<number>(1)
-
-  // function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-  //   setNumPages(numPages)
-  // }
 
   return (
     <>

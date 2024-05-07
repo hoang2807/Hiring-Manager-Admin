@@ -3,14 +3,8 @@ import { GoogleOutlined, PhoneOutlined, SearchOutlined } from '@ant-design/icons
 import { Avatar, Button, Card, Divider, Flex, Input, Modal, Space, Table, notification } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { useEffect, useState } from 'react'
-// import { Document, Page, pdfjs } from 'react-pdf'
-// import pdf from '../../data/CV.pdf'
 import './home.scss'
-// import 'react-pdf/dist/esm/Page/TextLayer.css'
-// import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import Copy from '@/components/Copy'
-
-// pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString()
 
 function PublicCv() {
   const [data, setData] = useState([])
@@ -73,10 +67,6 @@ function PublicCv() {
       }
     }
   }
-
-  // function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-  //   setNumPages(numPages)
-  // }
 
   useEffect(() => {
     fetchData()
