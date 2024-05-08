@@ -13,7 +13,7 @@ const Login = observer(() => {
   const [api, contextHolder] = notification.useNotification()
 
   const openNotification = (message: string) => {
-    api.info({
+    api.error({
       message: `Error`,
       description: message
     })
