@@ -1,4 +1,18 @@
-import { Button, DatePicker, DatePickerProps, Form, Input, Modal, Select, Space, Table } from 'antd'
+import {
+  Button,
+  DatePicker,
+  DatePickerProps,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Space,
+  Table,
+  Popconfirm,
+  notification
+} from 'antd'
+import type { PopconfirmProps } from 'antd'
+import type { NotificationArgsProps } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { useEffect, useState } from 'react'
 import Cities from '@/data/cities.json'
@@ -19,10 +33,21 @@ const Jobs = () => {
   const [job, setJob] = useState([])
   // const [mode, setMode] = useState('add')
 
+  const [api, contextHolder] = notification.useNotification()
+
+  const confirm: PopconfirmProps['onConfirm'] = (e) => {
+    console.log(e)
+    handleDelete(e)
+  }
+
+  const cancel: PopconfirmProps['onCancel'] = (e) => {
+    console.log(e)
+  }
+
   const resetState = () => {
     setTitle('')
-    setLocation('')
-    setPosition('')
+    setLocation('An Giang')
+    setPosition('Fulltime')
     setDescription('')
     setRequirements('')
     setTime('')
@@ -38,6 +63,7 @@ const Jobs = () => {
   }
 
   const showModalEdit = (id: string) => {
+    setIsModalOpen(true)
     fetch(`http://localhost:3000/api/job/${id}`, {
       method: 'get',
       headers: {
@@ -60,6 +86,20 @@ const Jobs = () => {
     setDate(dateString)
   }
 
+  const successNotification = (message: string) => {
+    api.success({
+      message: `success`,
+      description: message
+    })
+  }
+
+  const errorNotification = (message: string) => {
+    api.error({
+      message: `Error`,
+      description: message
+    })
+  }
+
   const handleDelete = (id: string) => {
     fetch(`http://localhost:3000/api/job/${id}`, {
       method: 'delete',
@@ -68,8 +108,14 @@ const Jobs = () => {
       }
     })
       .then((res) => res.json())
-      .then((data) => console.log(data))
-      .catch((error) => console.log(error))
+      .then((data) => {
+        const removeItem = job?.filter((i: { id: number }) => {
+          return i.id !== data.data.id
+        })
+        successNotification('Delete success')
+        setJob(removeItem)
+      })
+      .catch((error) => errorNotification(error.message))
   }
 
   const handleOk = () => {
@@ -98,7 +144,7 @@ const Jobs = () => {
         console.log(data)
         getList(sessionStorage.getItem('enterpriseId'))
       })
-      .catch((error) => console.log(error))
+      .catch((error) => errorNotification(error.message))
   }
 
   useEffect(() => {
@@ -110,16 +156,17 @@ const Jobs = () => {
     fetch(`${import.meta.env.VITE_BASE_API_URL}/job/list/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data)
         setJob(data.data)
       })
-      .catch((error) => console.error(error))
+      .catch((error) => {
+        errorNotification(error.message)
+      })
   }
 
   return (
     <>
+      {contextHolder}
       <ListCard />
-
       <Space direction='vertical' size={'middle'} style={{ display: 'flex' }}>
         <Button type='primary' onClick={showModal}>
           New job
@@ -156,9 +203,21 @@ const Jobs = () => {
               render: (item, record) => (
                 <ButtonGroup>
                   <Button onClick={() => showModalEdit(record.id)}>Edit</Button>
-                  <Button type='primary' danger onClick={() => handleDelete(record.id)}>
+                  {/* <Button type='primary' danger onClick={() => handleDelete(record.id)}>
                     Delete
-                  </Button>
+                  </Button> */}
+                  <Popconfirm
+                    title='Delete the task'
+                    description='Are you sure to delete this task?'
+                    onConfirm={() => confirm(record.id)}
+                    onCancel={cancel}
+                    okText='Yes'
+                    cancelText='No'
+                  >
+                    <Button type='primary' danger>
+                      Delete
+                    </Button>
+                  </Popconfirm>
                 </ButtonGroup>
               ),
               align: 'center'
