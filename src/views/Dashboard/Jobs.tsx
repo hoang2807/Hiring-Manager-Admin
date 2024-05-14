@@ -12,17 +12,17 @@ import {
   notification
 } from 'antd'
 import type { PopconfirmProps } from 'antd'
-import type { NotificationArgsProps } from 'antd'
 import ButtonGroup from 'antd/es/button/button-group'
 import { useEffect, useState } from 'react'
 import Cities from '@/data/cities.json'
 import ListCard from '@/components/ListCard'
+import dayjs from 'dayjs'
 
 const Jobs = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [title, setTitle] = useState('')
-  const [location, setLocation] = useState('')
-  const [position, setPosition] = useState('')
+  const [location, setLocation] = useState('An Giang')
+  const [position, setPosition] = useState('Fulltime')
   const [description, setDescription] = useState('')
   const [requirements, setRequirements] = useState('')
   const [time, setTime] = useState('')
@@ -31,7 +31,8 @@ const Jobs = () => {
   const [skills, setSkills] = useState('')
   const [benefits, setBenefits] = useState('')
   const [job, setJob] = useState([])
-  // const [mode, setMode] = useState('add')
+  const [jobId, setJobId] = useState(0)
+  const [mode, setMode] = useState('add')
 
   const [api, contextHolder] = notification.useNotification()
 
@@ -73,6 +74,18 @@ const Jobs = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data)
+        setTitle(data.data.title)
+        setJobId(data.data.id)
+        setLocation(data.data.location)
+        setPosition(data.data.position)
+        setDescription(data.data.job_description)
+        setRequirements(data.data.job_requirements)
+        setSkills(data.data.skills)
+        setTime(data.data.working_time)
+        setBenefits(data.data.benefits)
+        setDate(data.data.deadline_date)
+        setSalary(data.data.salary)
+        setMode('edit')
         getList(sessionStorage.getItem('enterpriseId') || '')
       })
       .catch((error) => console.log(error))
@@ -80,6 +93,7 @@ const Jobs = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false)
+    resetState()
   }
 
   const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
@@ -119,34 +133,66 @@ const Jobs = () => {
   }
 
   const handleOk = () => {
-    fetch('http://localhost:3000/api/job', {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        title,
-        job_description: description,
-        job_requirements: requirements,
-        position,
-        salary,
-        working_time: time,
-        location,
-        deadline_date: date,
-        benefits,
-        skills,
-        enterpriseName: 'Viettel',
-        enterpriseId: parseInt(sessionStorage.getItem('enterpriseId'))
+    if (mode === 'add')
+      fetch('http://localhost:3000/api/job', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title,
+          job_description: description,
+          job_requirements: requirements,
+          position,
+          salary,
+          working_time: time,
+          location,
+          deadline_date: date,
+          benefits,
+          skills,
+          enterpriseName: 'Viettel',
+          enterpriseId: parseInt(sessionStorage.getItem('enterpriseId'))
+        })
       })
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data)
-        getList(sessionStorage.getItem('enterpriseId'))
-        setIsModalOpen(false)
-        successNotification('Create job success')
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data)
+          getList(sessionStorage.getItem('enterpriseId'))
+          setIsModalOpen(false)
+          successNotification('Create job success')
+        })
+        .catch((error) => errorNotification(error.message))
+    else {
+      fetch('http://localhost:3000/api/job', {
+        method: 'put',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: jobId,
+          title,
+          job_description: description,
+          job_requirements: requirements,
+          position,
+          salary,
+          working_time: time,
+          location,
+          deadline_date: date,
+          benefits,
+          skills
+        })
       })
-      .catch((error) => errorNotification(error.message))
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data)
+          getList(sessionStorage.getItem('enterpriseId'))
+          setIsModalOpen(false)
+          setMode('add')
+          successNotification('Create job success')
+        })
+        .catch((error) => errorNotification(error.message))
+    }
+    resetState()
   }
 
   useEffect(() => {
@@ -164,6 +210,7 @@ const Jobs = () => {
         errorNotification(error.message)
       })
   }
+  const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY', 'DD-MM-YYYY', 'DD-MM-YY']
 
   return (
     <>
@@ -230,20 +277,23 @@ const Jobs = () => {
       <Modal title='New Job' open={isModalOpen} onCancel={handleCancel} onOk={handleOk} width={800}>
         <Form labelCol={{ span: 4 }}>
           <Form.Item label='Title'>
-            <Input onChange={(e) => setTitle(e.target.value)} />
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} />
           </Form.Item>
           <Form.Item label='Location'>
-            <Select style={{ width: 120 }} defaultValue='An Giang' onChange={(e) => setLocation(e)}>
-              {Cities?.map((item) => (
-                <Select.Option value={item.name} key={item.code}>
-                  {item.name}
-                </Select.Option>
-              ))}
+            <Select
+              style={{ width: 120 }}
+              defaultValue={location}
+              onChange={(e) => {
+                console.log(e)
+                setLocation(e)
+              }}
+            >
+              {Cities?.map((item) => <Select.Option key={item.name}>{item.name}</Select.Option>)}
             </Select>
           </Form.Item>
           <Form.Item label='Position'>
             <Select
-              defaultValue='Fulltime'
+              defaultValue={position}
               style={{ width: 120 }}
               options={[
                 { value: 'Fulltime', label: 'Fulltime' },
@@ -254,25 +304,37 @@ const Jobs = () => {
             />
           </Form.Item>
           <Form.Item label='Job description'>
-            <Input.TextArea rows={6} onChange={(e) => setDescription(e.target.value.replace(/\n/g, ';'))} />
+            <Input.TextArea
+              rows={6}
+              value={description}
+              onChange={(e) => setDescription(e.target.value.replace(/\n/g, ';'))}
+            />
           </Form.Item>
           <Form.Item label='Job requirements'>
-            <Input.TextArea rows={6} onChange={(e) => setRequirements(e.target.value.replace(/\n/g, ';'))} />
+            <Input.TextArea
+              rows={6}
+              value={requirements}
+              onChange={(e) => setRequirements(e.target.value.replace(/\n/g, ';'))}
+            />
           </Form.Item>
           <Form.Item label='Benefits'>
-            <Input.TextArea rows={6} onChange={(e) => setBenefits(e.target.value.replace(/\n/g, ';'))} />
+            <Input.TextArea
+              rows={6}
+              value={benefits}
+              onChange={(e) => setBenefits(e.target.value.replace(/\n/g, ';'))}
+            />
           </Form.Item>
           <Form.Item label='Skills'>
-            <Input onChange={(e) => setSkills(e.target.value)} />
+            <Input onChange={(e) => setSkills(e.target.value)} value={skills} />
           </Form.Item>
           <Form.Item label='Working time'>
-            <Input onChange={(e) => setTime(e.target.value)} />
+            <Input onChange={(e) => setTime(e.target.value)} value={time} />
           </Form.Item>
           <Form.Item label='Deadline date'>
-            <DatePicker onChange={onChangeDate} />
+            <DatePicker onChange={onChangeDate} defaultValue={dayjs(date, 'YYYY/MM/DD')} format={'YYYY/MM/DD'} />
           </Form.Item>
           <Form.Item label='Salary'>
-            <Input onChange={(e) => setSalary(e.target.value)} />
+            <Input onChange={(e) => setSalary(e.target.value)} value={salary} />
           </Form.Item>
         </Form>
       </Modal>
