@@ -16,7 +16,7 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState<boolean>(false)
   return (
     <Sider theme='light' collapsible collapsed={collapsed} onCollapse={() => setCollapsed(!collapsed)}>
-      <h1 style={{ textAlign: 'center', marginTop: '1rem', fontSize: '2rem', fontWeight: 'bold' }}>Dashboard</h1>
+      <h1 style={{ textAlign: 'center', marginTop: '1rem', fontSize: '2rem', fontWeight: 'bold' }}>ITViec</h1>
       <Menu items={items} />
     </Sider>
   )
