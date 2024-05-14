@@ -143,6 +143,8 @@ const Jobs = () => {
       .then((data) => {
         console.log(data)
         getList(sessionStorage.getItem('enterpriseId'))
+        setIsModalOpen(false)
+        successNotification('Create job success')
       })
       .catch((error) => errorNotification(error.message))
   }
