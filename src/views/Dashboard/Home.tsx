@@ -32,6 +32,7 @@ const Home = () => {
   const [avatar, setAvatar] = useState<string>('')
   const [status, setStatus] = useState<string>('')
   const [cv, setCv] = useState()
+  const [score, setScore] = useState(0)
 
   const [api, contextHolder] = notification.useNotification()
 
@@ -50,12 +51,12 @@ const Home = () => {
   }
 
   useEffect(() => {
-    const id = window.sessionStorage.getItem('enterpriseId') || ''
-    fetchData(id)
+    fetchData()
   }, [])
 
-  const fetchData = async (id: string) => {
+  const fetchData = async () => {
     try {
+      const id = window.sessionStorage.getItem('enterpriseId') || ''
       const data = await (await fetch(`${import.meta.env.VITE_BASE_API_URL}/application/${id}`)).json()
       setData(data?.data)
     } catch (error: unknown) {
@@ -66,10 +67,12 @@ const Home = () => {
     }
   }
 
-  const showModal = async (userId: number, id: number) => {
+  const showModal = async (userId: number, id: number, score: number) => {
     setIsModalOpen(true)
     try {
+      setScore(score)
       const data = await (await fetch(`${import.meta.env.VITE_BASE_API_URL}/user/${userId}`)).json()
+
       await updateStatus(id, Status.WATCHED)
       setId(id)
       setName(data.data?.fullName)
@@ -111,7 +114,7 @@ const Home = () => {
   const updateStatus = async (id: number, status: string) => {
     try {
       const data = await (
-        await fetch(`${import.meta.env.VITE_BASE_API_URL}/application/${id}`, {
+        await fetch(`${import.meta.env.VITE_BASE_API_URL}/application/status/${id}`, {
           method: 'put',
           headers: {
             'Content-Type': 'application/json'
@@ -119,10 +122,35 @@ const Home = () => {
           body: JSON.stringify({ status })
         })
       ).json()
+      console.log(data)
 
       setStatus(data.data?.status)
       if (status !== Status.WATCHED) successNotification('Update status success')
       return data
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(error)
+        errorNotification(error.message)
+      }
+    }
+  }
+
+  const updateScore = async () => {
+    try {
+      const data = await (
+        await fetch(`${import.meta.env.VITE_BASE_API_URL}/application/score/${id}`, {
+          method: 'put',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ score })
+        })
+      ).json()
+
+      console.log(data)
+
+      successNotification('Success save score')
+      fetchData()
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.log(error)
@@ -201,8 +229,8 @@ const Home = () => {
                 <Button>Cập nhật trạng thái CV</Button>
               </Dropdown>
               <Title level={3}>Điểm</Title>
-              <Slider min={1} max={10} />
-              <Button>Lưu điểm</Button>
+              <Slider min={0} max={10} defaultValue={score} onChange={(e) => setScore(e)} />
+              <Button onClick={updateScore}>Lưu điểm</Button>
               <Button onClick={handleDownloadCV}>Tải CV</Button>
             </Flex>
             <Divider />
@@ -268,12 +296,17 @@ const Home = () => {
               )
           },
           {
+            dataIndex: 'score',
+            title: 'Score',
+            align: 'center'
+          },
+          {
             dataIndex: 'action',
             title: 'Action',
             align: 'center',
-            render: (item, record: { userId: number; id: number; status: string }) => (
+            render: (item, record: { userId: number; id: number; status: string; score: number }) => (
               <Flex gap='small' justify='center'>
-                <Button onClick={() => showModal(record.userId, record.id)}>Xem CV</Button>
+                <Button onClick={() => showModal(record.userId, record.id, record.score)}>Xem CV</Button>
                 <Button type='primary' onClick={() => handleAccept(record.id)}>
                   Chấp nhận
                 </Button>

@@ -257,7 +257,7 @@ const Jobs = () => {
                   </Button> */}
                   <Popconfirm
                     title='Delete the task'
-                    description='Are you sure to delete this task?'
+                    description='Are you sure to delete this job?'
                     onConfirm={() => confirm(record.id)}
                     onCancel={cancel}
                     okText='Yes'
