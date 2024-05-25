@@ -19,6 +19,7 @@ import { CheckCircleOutlined, GoogleOutlined, PhoneOutlined, SyncOutlined } from
 import Copy from '@/components/Copy'
 import './home.scss'
 import { Status } from '@/constants/ApplicationStatus.enum'
+import PieChart from '@/components/PieChart'
 
 const { Title } = Typography
 
@@ -33,6 +34,9 @@ const Home = () => {
   const [status, setStatus] = useState<string>('')
   const [cv, setCv] = useState()
   const [score, setScore] = useState(0)
+  const [accept, setAccept] = useState(0)
+  const [reject, setReject] = useState(0)
+  const [notSeen, setNotSeen] = useState(0)
 
   const [api, contextHolder] = notification.useNotification()
 
@@ -59,12 +63,37 @@ const Home = () => {
       const id = window.sessionStorage.getItem('enterpriseId') || ''
       const data = await (await fetch(`${import.meta.env.VITE_BASE_API_URL}/application/${id}`)).json()
       setData(data?.data)
+      calculate(data?.data)
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.log(error)
         errorNotification(error.message)
       }
     }
+  }
+
+  const calculate = (data) => {
+    let SUITABLE = 0
+    let NOT_SUITABLE = 0
+    let NOT_SEEN = 0
+    for (let i = 0; i < data.length; ++i) {
+      if (data[i].status === 'SUITABLE') {
+        ++SUITABLE
+        continue
+      }
+      if (data[i].status === 'NOT_SUITABLE') {
+        ++NOT_SUITABLE
+        continue
+      }
+      if (data[i].status === 'NOT_SEEN') {
+        ++NOT_SEEN
+        continue
+      }
+    }
+    
+    setNotSeen(NOT_SEEN)
+    setAccept(SUITABLE)
+    setReject(NOT_SUITABLE)
   }
 
   const showModal = async (userId: number, id: number, score: number) => {
@@ -255,6 +284,9 @@ const Home = () => {
           </div>
         </div>
       </Modal>
+
+      <PieChart status={[accept, reject, notSeen]} />
+
       <Table
         dataSource={data}
         pagination={{ pageSize: 9 }}
@@ -298,7 +330,8 @@ const Home = () => {
           {
             dataIndex: 'score',
             title: 'Score',
-            align: 'center'
+            align: 'center',
+            sorter: (a: { score: number }, b: { score: number }) => a.score - b.score
           },
           {
             dataIndex: 'action',
