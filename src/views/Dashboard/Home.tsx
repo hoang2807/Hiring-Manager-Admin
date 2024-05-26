@@ -20,6 +20,7 @@ import Copy from '@/components/Copy'
 import './home.scss'
 import { Status } from '@/constants/ApplicationStatus.enum'
 import PieChart from '@/components/PieChart'
+import BarChart from '@/components/BarChart'
 
 const { Title } = Typography
 
@@ -37,6 +38,9 @@ const Home = () => {
   const [accept, setAccept] = useState(0)
   const [reject, setReject] = useState(0)
   const [notSeen, setNotSeen] = useState(0)
+  const [low, setLow] = useState(0)
+  const [medium, setMedium] = useState(0)
+  const [high, setHigh] = useState(0)
 
   const [api, contextHolder] = notification.useNotification()
 
@@ -76,7 +80,13 @@ const Home = () => {
     let SUITABLE = 0
     let NOT_SUITABLE = 0
     let NOT_SEEN = 0
+    let low = 0
+    let medium = 0
+    let high = 0
     for (let i = 0; i < data.length; ++i) {
+      if (data[i].score < 5) ++low
+      else if (5 <= data[i].score && data[i].score < 8) ++medium
+      else if (data[i].score >= 8) ++high
       if (data[i].status === 'SUITABLE') {
         ++SUITABLE
         continue
@@ -90,10 +100,13 @@ const Home = () => {
         continue
       }
     }
-    
+
     setNotSeen(NOT_SEEN)
     setAccept(SUITABLE)
     setReject(NOT_SUITABLE)
+    setLow(low)
+    setMedium(medium)
+    setHigh(high)
   }
 
   const showModal = async (userId: number, id: number, score: number) => {
@@ -154,6 +167,7 @@ const Home = () => {
       console.log(data)
 
       setStatus(data.data?.status)
+      calculate(data)
       if (status !== Status.WATCHED) successNotification('Update status success')
       return data
     } catch (error: unknown) {
@@ -285,7 +299,10 @@ const Home = () => {
         </div>
       </Modal>
 
-      <PieChart status={[accept, reject, notSeen]} />
+      <Flex align='center'>
+        <PieChart status={[accept, reject, notSeen]} />
+        <BarChart score={[low, medium, high]} />
+      </Flex>
 
       <Table
         dataSource={data}

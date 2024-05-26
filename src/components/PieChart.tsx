@@ -1,12 +1,11 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Pie } from 'react-chartjs-2'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 const PieChart = (status) => {
   useEffect(() => {})
-  console.log(status)
   const options = {}
   const data = {
     labels: ['CV ứng tuyển', 'CV từ chối', 'CV chưa xem'],
@@ -21,7 +20,7 @@ const PieChart = (status) => {
   }
 
   return (
-    <div style={{ width: '500px', height: '400px', marginBottom: '20px' }}>
+    <div style={{ width: '500px', height: '400px' }}>
       <Pie data={data} options={options} />
     </div>
   )
