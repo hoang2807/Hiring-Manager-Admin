@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 const { Sider } = Layout
 
+import './sidebar.scss'
+
 const items = [
   { label: <Link to=''>Home</Link>, key: 'home', icon: <HomeOutlined /> },
   { label: <Link to='jobs'>Jobs</Link>, key: 'jobs', icon: <ReadOutlined /> },

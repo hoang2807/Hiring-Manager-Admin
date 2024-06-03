@@ -11,11 +11,13 @@ import {
   MenuProps,
   notification,
   Slider,
-  Typography
+  Typography,
+  Space,
+  Input
 } from 'antd'
 import { useEffect, useState } from 'react'
 import ListCard from '@/components/ListCard'
-import { CheckCircleOutlined, GoogleOutlined, PhoneOutlined, SyncOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, GoogleOutlined, PhoneOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons'
 import Copy from '@/components/Copy'
 import './home.scss'
 import { Status } from '@/constants/ApplicationStatus.enum'
@@ -41,6 +43,7 @@ const Home = () => {
   const [low, setLow] = useState(0)
   const [medium, setMedium] = useState(0)
   const [high, setHigh] = useState(0)
+  const [filters, setFilters] = useState([])
 
   const [api, contextHolder] = notification.useNotification()
 
@@ -66,6 +69,10 @@ const Home = () => {
     try {
       const id = window.sessionStorage.getItem('enterpriseId') || ''
       const data = await (await fetch(`${import.meta.env.VITE_BASE_API_URL}/application/${id}`)).json()
+      const array = []
+      for (let i = 0; i < data.data.length; ++i)
+        if (data.data[i].jobName) array.push({ text: data.data[i].jobName, value: data.data[i].jobName })
+      setFilters(array)
       setData(data?.data)
       calculate(data?.data)
     } catch (error: unknown) {
@@ -304,6 +311,10 @@ const Home = () => {
         <BarChart score={[low, medium, high]} />
       </Flex>
 
+      <Space.Compact size='large'>
+        <Input addonBefore={<SearchOutlined />} placeholder='search' className='my-4' />
+      </Space.Compact>
+
       <Table
         dataSource={data}
         pagination={{ pageSize: 9 }}
@@ -312,12 +323,22 @@ const Home = () => {
           {
             dataIndex: 'id',
             title: 'Id',
-            align: 'center'
+            align: 'center',
+            filters: filters,
+            onFilter: (value, record) => record.jobName.indexOf(value as string) === 0,
+            sortDirections: ['descend'],
+            filterSearch: true
           },
           {
             dataIndex: 'fullName',
             title: 'FullName',
             align: 'center'
+          },
+          {
+            dataIndex: 'jobName',
+            title: 'JobName',
+            align: 'center'
+            // hidden: true
           },
           {
             dataIndex: 'email',
