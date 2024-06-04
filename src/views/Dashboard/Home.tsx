@@ -11,13 +11,11 @@ import {
   MenuProps,
   notification,
   Slider,
-  Typography,
-  Space,
-  Input
+  Typography
 } from 'antd'
 import { useEffect, useState } from 'react'
 import ListCard from '@/components/ListCard'
-import { CheckCircleOutlined, GoogleOutlined, PhoneOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons'
+import { CheckCircleOutlined, GoogleOutlined, PhoneOutlined, SyncOutlined } from '@ant-design/icons'
 import Copy from '@/components/Copy'
 import './home.scss'
 import { Status } from '@/constants/ApplicationStatus.enum'
@@ -306,14 +304,10 @@ const Home = () => {
         </div>
       </Modal>
 
-      <Flex align='center'>
+      <Flex align='center' className='mb-8'>
         <PieChart status={[accept, reject, notSeen]} />
         <BarChart score={[low, medium, high]} />
       </Flex>
-
-      <Space.Compact size='large'>
-        <Input addonBefore={<SearchOutlined />} placeholder='search' className='my-4' />
-      </Space.Compact>
 
       <Table
         dataSource={data}
