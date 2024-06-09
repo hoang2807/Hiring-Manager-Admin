@@ -141,14 +141,14 @@ const Jobs = () => {
         },
         body: JSON.stringify({
           title,
-          job_description: description,
-          job_requirements: requirements,
+          job_description: description.replace(/\n/g, ';'),
+          job_requirements: requirements.replace(/\n/g, ';'),
           position,
           salary,
           working_time: time,
           location,
           deadline_date: date,
-          benefits,
+          benefits: benefits.replace(/\n/g, ';'),
           skills,
           enterpriseName: 'Viettel',
           enterpriseId: parseInt(sessionStorage.getItem('enterpriseId'))
@@ -304,25 +304,13 @@ const Jobs = () => {
             />
           </Form.Item>
           <Form.Item label='Job description'>
-            <Input.TextArea
-              rows={6}
-              value={description}
-              onChange={(e) => setDescription(e.target.value.replace(/\n/g, ';'))}
-            />
+            <Input.TextArea rows={6} value={description} onChange={(e) => setDescription(e.target.value)} />
           </Form.Item>
           <Form.Item label='Job requirements'>
-            <Input.TextArea
-              rows={6}
-              value={requirements}
-              onChange={(e) => setRequirements(e.target.value.replace(/\n/g, ';'))}
-            />
+            <Input.TextArea rows={6} value={requirements} onChange={(e) => setRequirements(e.target.value)} />
           </Form.Item>
           <Form.Item label='Benefits'>
-            <Input.TextArea
-              rows={6}
-              value={benefits}
-              onChange={(e) => setBenefits(e.target.value.replace(/\n/g, ';'))}
-            />
+            <Input.TextArea rows={6} value={benefits} onChange={(e) => setBenefits(e.target.value)} />
           </Form.Item>
           <Form.Item label='Skills'>
             <Input onChange={(e) => setSkills(e.target.value)} value={skills} />
@@ -331,7 +319,8 @@ const Jobs = () => {
             <Input onChange={(e) => setTime(e.target.value)} value={time} />
           </Form.Item>
           <Form.Item label='Deadline date'>
-            <DatePicker onChange={onChangeDate} defaultValue={dayjs(date, 'YYYY/MM/DD')} format={'YYYY/MM/DD'} />
+            {/* <DatePicker onChange={onChangeDate} defaultValue={dayjs(date, 'YYYY/MM/DD')} format={'YYYY/MM/DD'} /> */}
+            <DatePicker onChange={onChangeDate} />
           </Form.Item>
           <Form.Item label='Salary'>
             <Input onChange={(e) => setSalary(e.target.value)} value={salary} />

@@ -348,16 +348,26 @@ const Home = () => {
             dataIndex: 'status',
             title: 'Status',
             align: 'center',
-            render: (val) =>
-              val === 'SUITABLE' || val === 'NOT_SUITABLE' ? (
-                <Tag icon={<CheckCircleOutlined />} color='success'>
-                  Đã phê duyệt
-                </Tag>
-              ) : (
-                <Tag icon={<SyncOutlined spin />} color='processing'>
-                  Đang chờ duyệt
-                </Tag>
-              )
+            render: (item, val) => {
+              if (val.status == Status.WATCHED)
+                return (
+                  <Tag icon={<CheckCircleOutlined />} color='default'>
+                    Đã xem
+                  </Tag>
+                )
+              if (val.status == Status.SUITABLE)
+                return (
+                  <Tag icon={<CheckCircleOutlined />} color='success'>
+                    Đã Chấp nhận
+                  </Tag>
+                )
+              if (val.status == Status.NOT_SUITABLE)
+                return (
+                  <Tag icon={<CheckCircleOutlined />} color='red'>
+                    Đã từ chối
+                  </Tag>
+                )
+            }
           },
           {
             dataIndex: 'score',
